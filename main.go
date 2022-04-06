@@ -2,39 +2,156 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 )
 
-var indexSet = map[string]struct{}{}
-
 func isMutant(adn []string) (b bool) {
+	adnByte := byteSlice(adn)
 	n := len(adn)
 
 	if n < 4 {
 		return false
 	}
-	x := 1
-	for len(indexSet) < n*n {
-		i, j := randomIndex(n)
-		base := string(adn[j][i])
-		fmt.Printf("%d La base nitrogenada %s, se encuentra en la posición (%d,%d)\n", x, base, i, j)
-		x++
+
+	k := 0
+	for i, thread := range adn {
+		for j := range thread {
+			k += checkPos(adnByte, i, j)
+			fmt.Printf("%s -> [%d,%d] -> %d\n", string(adnByte[i][j]), i, j, k)
+			if k > 1 {
+				b = true
+				break
+			}
+		}
+		if k > 1 {
+			b = true
+			break
+		}
+	}
+
+	fmt.Println("k =", k)
+	fmt.Println(adnByte)
+	return
+}
+
+func byteSlice(a []string) [][]byte {
+	r := make([][]byte, 0, len(a))
+	for _, v := range a {
+		r = append(r, []byte(v))
+	}
+
+	return r
+}
+
+func checkPos(adnByte [][]byte, i, j int) (c int) {
+	c += checkH(adnByte, i, j)
+	c += checkV(adnByte, i, j)
+	// c += checkD(adn, v, i, j)
+
+	return
+}
+
+func checkH(adnByte [][]byte, i, j int) (c int) {
+	base := adnByte[i][j]
+	aux := 0
+	n := len(adnByte)
+	equals := make([][]int, 0, 5)
+
+	// check right elements
+	for r := j; r < n; r++ {
+		if base != adnByte[i][r] || aux == 4 {
+			break
+		}
+		aux++
+		equals = append(equals, []int{i, r})
+	}
+
+	// check left elements
+	for l := j; l >= 0; l-- {
+		if base != adnByte[i][l] || aux == 4 {
+			break
+		}
+		aux++
+		equals = append(equals, []int{i, l})
+	}
+
+	if aux >= 4 {
+		c = 1
+		patch(adnByte, equals)
 	}
 
 	return
 }
 
-func randomIndex(n int) (i, j int) {
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	i = r1.Intn(n)
-	j = r1.Intn(n)
-	index := fmt.Sprintf("%d%d", i, j)
-	if _, ok := indexSet[index]; !ok {
-		indexSet[index] = struct{}{}
+func checkV(adnByte [][]byte, i, j int) (c int) {
+	base := adnByte[i][j]
+	aux := 0
+	n := len(adnByte)
+	equals := make([][]int, 0, 5)
+
+	// check down elements
+	for d := i; d < n; d++ {
+		if base != adnByte[d][j] || aux == 4 {
+			break
+		}
+		aux++
+		equals = append(equals, []int{d, j})
 	}
+
+	// check up elements
+	for u := j; u >= 0; u-- {
+		if base != adnByte[u][j] || aux == 4 {
+			break
+		}
+		aux++
+		equals = append(equals, []int{u, j})
+	}
+
+	if aux >= 4 {
+		c = 1
+		patch(adnByte, equals)
+	}
+
 	return
+}
+
+// func checkD(adnByte [][]byte, i, j int) (c int) {
+// 	base := adnByte[i][j]
+// 	aux := 0
+// 	n := len(adnByte)
+// 	equals := make([][]int, 0, 5)
+
+// 	// check down elements
+// 	for d := i; d < n; d++ {
+// 		if base != adnByte[d][j] || aux == 4 {
+// 			break
+// 		}
+// 		aux++
+// 		equals = append(equals, []int{d, j})
+// 	}
+
+// 	// check up elements
+// 	for u := j; u >= 0; u-- {
+// 		if base != adnByte[u][j] || aux == 4 {
+// 			break
+// 		}
+// 		aux++
+// 		equals = append(equals, []int{u, j})
+// 	}
+
+// 	if aux >= 4 {
+// 		c = 1
+// 		patch(adnByte, equals)
+// 	}
+
+// 	return
+// }
+
+func patch(adnByte [][]byte, index [][]int) {
+	for x, ind := range index {
+		i := ind[0]
+		j := ind[1]
+		adnByte[i][j] = byte(x)
+	}
 }
 
 func main() {
@@ -47,4 +164,5 @@ func main() {
 		"TCACTG",
 	}
 	_ = isMutant(thread)
+
 }
