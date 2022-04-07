@@ -15,17 +15,31 @@ func main() {
 	// 	"TCACTG",
 	// }
 
+	// Solo tinene una coincidencia usar en unit test
+	// thread := []string{
+	// 	"TGCTCTCGAT",
+	// 	"CACCTCGAGG",
+	// 	"ACAGTGCCAG",
+	// 	"GTCTGCCGCA",
+	// 	"CGATGAAGCC",
+	// 	"CTCATGCTAC",
+	// 	"TTCAGGTACA",
+	// 	"TATTCCGCAT",
+	// 	"AACGTAACGA",
+	// 	"CTTGATTTAC",
+	// }
+
 	thread := []string{
-		"TGCTCTCGAT",
-		"CACCTCGAGG",
-		"ACAGTGCCAG",
-		"GTCTGCCGCA",
-		"CGATGAAGCC",
-		"CTCATGCTAC",
-		"TTCAGGTACA",
-		"TATTCCGCAT",
-		"AACGTAACGA",
-		"CTTGATTTAC",
+		"CGGTATTGAC",
+		"CAGCACAAGC",
+		"GGTTTAGATA",
+		"CCTATAGTCC",
+		"ACGAGACTCT",
+		"ATGTAGCCAA",
+		"CCCCGACCTT",
+		"CGGGTTGAAG",
+		"CGTTCCCGGG",
+		"CAAAACAGTA",
 	}
 
 	b := mutant.IsMutant(thread)
