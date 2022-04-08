@@ -2,15 +2,20 @@
 //DNA strand, return wherher a person is mutant or not
 package mutant
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"log"
+	"regexp"
+)
 
 // IsMutant returns true if a DNA strand has two contiguous
 // sequences of four nitrogenous bases, or false otherwise
 func IsMutant(adn []string) (b bool) {
-	adnByte := byteSlice(adn)
-	n := len(adn)
+	adnByte, err := byteSlice(adn)
 
-	if n < 4 {
+	if err != nil {
+		log.Println(err.Error())
 		return false
 	}
 
@@ -33,13 +38,28 @@ func IsMutant(adn []string) (b bool) {
 }
 
 // byteSlice converts a slice of strings to a slice of bytes
-func byteSlice(a []string) [][]byte {
-	r := make([][]byte, 0, len(a))
-	for _, v := range a {
-		r = append(r, []byte(v))
+// and check if DNA strand is valid.
+func byteSlice(a []string) (r [][]byte, e error) {
+	rgx, _ := regexp.Compile(`\b([ACGT]+)\b`)
+	n := len(a)
+
+	if n < 4 {
+		errStr := "array has less than 4 elements"
+		return [][]byte{}, errors.New(errStr)
 	}
 
-	return r
+	r = make([][]byte, 0, n)
+	for _, v := range a {
+		l := len(v)
+		if rgx.MatchString(v) && l == n {
+			r = append(r, []byte(v))
+		} else {
+			errStr := fmt.Sprintf("invalid frame: %s or matrix is not square", v)
+			return [][]byte{}, errors.New(errStr)
+		}
+	}
+
+	return r, nil
 }
 
 // patch replaces bytes in a slice of bytes
@@ -92,7 +112,6 @@ func checkHorizontal(adnByte [][]byte, i, j int) (c int) {
 
 	if aux >= 4 {
 		c = 1
-		fmt.Printf("Horizontales Repetidas %v\n", equals)
 		patch(adnByte, equals)
 	}
 
@@ -127,7 +146,6 @@ func checkVertical(adnByte [][]byte, i, j int) (c int) {
 
 	if aux >= 4 {
 		c = 1
-		fmt.Printf("Verticales L Repetidas %v\n", equals)
 		patch(adnByte, equals)
 	}
 
@@ -158,7 +176,6 @@ func checkDiagRight(adnByte [][]byte, i, j int) (c int) {
 
 	if aux >= 4 {
 		c = 1
-		fmt.Printf("Diagonales R Repetidas %v\n", equals)
 		patch(adnByte, equals)
 	}
 
@@ -189,7 +206,6 @@ func checkDiagLeft(adnByte [][]byte, i, j int) (c int) {
 
 	if aux >= 4 {
 		c = 1
-		fmt.Printf("Diagonales L Repetidas %v\n", equals)
 		patch(adnByte, equals)
 	}
 
