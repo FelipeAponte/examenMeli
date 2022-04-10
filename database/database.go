@@ -1,3 +1,5 @@
+// package database allows the connections with a MySql database and
+// implements functions to insert and query data
 package database
 
 import (
@@ -7,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // MYSQL
 )
 
+// connectMysql opens the database to perform operations
 func connectMysql() *sql.DB {
 	USER := "root"
 	PASSWD := "root"
@@ -21,6 +24,8 @@ func connectMysql() *sql.DB {
 	return db
 }
 
+// DnaInsert allows insert data in the dnaVerified table
+// and checks that no sql injections occur
 func DnaInsert(dna string, isMutant bool) {
 	db := connectMysql()
 	defer db.Close()
@@ -35,6 +40,7 @@ func DnaInsert(dna string, isMutant bool) {
 
 }
 
+// QueryMutants returns the among of mutants in the table dnaVerified
 func QueryMutants() (r int) {
 	db := connectMysql()
 	defer db.Close()
@@ -51,6 +57,7 @@ func QueryMutants() (r int) {
 	return
 }
 
+// QueryHumans returns the among of humans in the table dnaVerified
 func QueryHumans() (r int) {
 	db := connectMysql()
 	defer db.Close()

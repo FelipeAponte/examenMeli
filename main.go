@@ -1,10 +1,10 @@
+// package main
 package main
 
 import (
 	"encoding/json"
 	"errors"
 	"examenMeli/mutant"
-	"log"
 	"net/http"
 
 	check "examenMeli/checkJsonBody"
@@ -23,6 +23,8 @@ type statistic struct {
 	Ratio            float32 `json:"ratio"`
 }
 
+// checkMutant is a Handler function to implement the method POST
+// for the endpoint '/mutant/' and saves the correct data
 func checkMutant(w http.ResponseWriter, r *http.Request) {
 	var thread dnaThread
 
@@ -31,10 +33,13 @@ func checkMutant(w http.ResponseWriter, r *http.Request) {
 		var mr *check.MalformedRequest
 		if errors.As(err, &mr) {
 			http.Error(w, mr.Msg, mr.Status)
-		} else {
-			log.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
+		return
+	}
+
+	err = check.CheckThreadDna(thread.Dna)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -49,11 +54,14 @@ func checkMutant(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// statistics is a Handler function to implement the method GET
+// for the endpoint '/stats' and write a JSON response with the
+// statistics of DNA strands
 func statistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	mutants := DB.QueryMutants()
 	humans := DB.QueryHumans()
-	ratio := float32(mutants) / float32(humans)
+	ratio := getRatio(mutants, humans)
 
 	stat := statistic{
 		Count_mutant_dna: mutants,
@@ -62,6 +70,16 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(stat)
+}
+
+// getRatio gets the ratio between mutants and humans
+func getRatio(m, h int) (r float32) {
+	if h == 0 {
+		r = float32(m)
+	} else {
+		r = float32(m) / float32(h)
+	}
+	return
 }
 
 func main() {

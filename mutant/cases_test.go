@@ -14,14 +14,6 @@ type dnaThread struct {
 */
 
 var dnaThreads = []dnaThread{
-	// empty array
-	{[]string{}, false},
-	// array not valid 3x3
-	{[]string{
-		"AAA",
-		"CCC",
-		"TTT",
-	}, false},
 	// array 4x4 no mutant
 	{[]string{
 		"ACGT",
@@ -106,18 +98,6 @@ var dnaThreads = []dnaThread{
 		"CGTTCCCGGG",
 		"CAAAACAGTA",
 	}, true},
-	// array 9x10 not valid
-	{[]string{
-		"CGGTATTGAC",
-		"CAGCACAAGC",
-		"GGTTTAGATA",
-		"CCTATAGTCC",
-		"ACGAGACTCT",
-		"ATGTAGCCAA",
-		"CCCCGACCTT",
-		"CGGGTTGAAG",
-		"CGTTCCCGGG",
-	}, false},
 }
 
 // array 120x120 without coincidence no mutant

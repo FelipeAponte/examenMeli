@@ -1,3 +1,5 @@
+// package checkJsonBody implements two functins to parses the json body
+// recived in the post method
 package checkJsonBody
 
 import (
@@ -6,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/golang/gddo/httputil/header"
@@ -20,6 +23,8 @@ func (mr *MalformedRequest) Error() string {
 	return mr.Msg
 }
 
+// DecodeJSONBody returns a custom malformedRequest error type when the
+// decode of the JSON has any error
 func DecodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	if r.Header.Get("Content-Type") != "" {
 		value, _ := header.ParseValueAndParams(r.Header, "Content-Type")
@@ -74,6 +79,31 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	if err != io.EOF {
 		Msg := "Request body must only contain a single JSON object"
 		return &MalformedRequest{Status: http.StatusBadRequest, Msg: Msg}
+	}
+
+	return nil
+}
+
+// CheckThreadDna checks the structure of the expected DNA strand in the
+// JSON data and returns an error if the structure is bad
+func CheckThreadDna(thread []string) error {
+	rgx, _ := regexp.Compile(`\b([ACGT]+)\b`)
+	n := len(thread)
+
+	if n < 4 {
+		errStr := "it is not a human dna"
+		return errors.New(errStr)
+	}
+
+	for _, t := range thread {
+		if !rgx.MatchString(t) {
+			errStr := fmt.Sprintf("invalid nitrogenous base found: %s", t)
+			return errors.New(errStr)
+		}
+		if len(t) != n {
+			errStr := fmt.Sprintf("matrix is not square: %dx%d", n, len(t))
+			return errors.New(errStr)
+		}
 	}
 
 	return nil

@@ -2,22 +2,10 @@
 //DNA strand, return wherher a person is mutant or not
 package mutant
 
-import (
-	"errors"
-	"fmt"
-	"log"
-	"regexp"
-)
-
 // IsMutant returns true if a DNA strand has two contiguous
 // sequences of four nitrogenous bases, or false otherwise
 func IsMutant(adn []string) (b bool) {
-	adnByte, err := byteSlice(adn)
-
-	if err != nil {
-		log.Println(err.Error())
-		return false
-	}
+	adnByte := byteSlice(adn)
 
 	k := 0
 	for i, thread := range adn {
@@ -38,32 +26,15 @@ func IsMutant(adn []string) (b bool) {
 }
 
 // byteSlice converts a slice of strings to a slice of bytes
-// and check if DNA strand is valid.
-func byteSlice(a []string) (r [][]byte, e error) {
-	rgx, _ := regexp.Compile(`\b([ACGT]+)\b`)
+func byteSlice(a []string) [][]byte {
 	n := len(a)
+	r := make([][]byte, 0, n)
 
-	if n < 4 {
-		errStr := "array has less than 4 elements"
-		return [][]byte{}, errors.New(errStr)
-	}
-
-	r = make([][]byte, 0, n)
 	for _, v := range a {
-		l := len(v)
-		switch {
-		case !rgx.MatchString(v):
-			errStr := fmt.Sprintf("invalid frame: %s", v)
-			return [][]byte{}, errors.New(errStr)
-		case l != n:
-			errStr := fmt.Sprintf("matrix is not square: %dx%d", n, l)
-			return [][]byte{}, errors.New(errStr)
-		default:
-			r = append(r, []byte(v))
-		}
+		r = append(r, []byte(v))
 	}
 
-	return r, nil
+	return r
 }
 
 // patch replaces bytes in a slice of bytes
