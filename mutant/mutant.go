@@ -51,11 +51,15 @@ func byteSlice(a []string) (r [][]byte, e error) {
 	r = make([][]byte, 0, n)
 	for _, v := range a {
 		l := len(v)
-		if rgx.MatchString(v) && l == n {
-			r = append(r, []byte(v))
-		} else {
-			errStr := fmt.Sprintf("invalid frame: %s or matrix is not square", v)
+		switch {
+		case !rgx.MatchString(v):
+			errStr := fmt.Sprintf("invalid frame: %s", v)
 			return [][]byte{}, errors.New(errStr)
+		case l != n:
+			errStr := fmt.Sprintf("matrix is not square: %dx%d", n, l)
+			return [][]byte{}, errors.New(errStr)
+		default:
+			r = append(r, []byte(v))
 		}
 	}
 
