@@ -61,9 +61,13 @@ Para poner en funcionamiento la API REST ejecute el siguiente comando:
 ## URL de la API REST
 La URL habilidata para poder hacer peticiones HTTP GET en el endpoint '/stats' y peticiones HTTP POST
 al endpoint '/mutant/' para enviar secuencias de ADN por medio del body, es la siguiente:
-ec2-54-87-45-137.compute-1.amazonaws.com
-o puede utilizar directamente la dirección IP pública del servidor:
-54.87.45.137
+```sh
+ec2-54-87-45-137.compute-1.amazonaws.com/stats
+```
+O puede utilizar directamente la dirección IP pública del servidor:
+```sh
+54.87.45.137/stats
+```
 ### Documentación de la API REST
 Para poder ver la documentación de la API REST ingrese a [Swagger Editor](https://editor.swagger.io/) y copie y pegue el siguiente código YAML:
 ``` yaml
