@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Ayudando a Magneto
+  description: Servicio API-REST de análisis de secuencias de ADN para reconocer mutantes.
+  version: 0.1.1
+servers:
+  - url: http://54.87.45.137:8000
+    description: Instancia EC2_AWS de servidor Ubuntu 20.04.3 LTS
+paths:
+  /stats:
+    get:
+      summary: Devuelve las estadísticas de las verificaciones de ADN realizadas.
+      description: >-
+        Muestra la cantidad de mutantes, cantidad de humanos y la razón entre
+        ambos.
+      responses:
+        '200':
+          description: A JSON object of details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count_mutant_dna:
+                    type: integer
+                  count_human_dna:
+                    type: integer
+                  ratio:
+                    type: number
+  /mutant/:
+    post:
+      summary: Permite enviar secuencias de ADN para que sean analizadas por la API.
+      description: >-
+        Si la secuencia de ADN es valida, devuelve un código de estado 200 si es
+        mutante o un código de estado 403 si es humano.
+      responses:
+        '200':
+          description: Encuentra más de 1 secuencia de bases nitrogenadas contiguas de forma horizontal, vertical o diagonal
+          content:
+            application/json:
+              examples:
+                mutante:
+                  value: >-
+                    {"dna":["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]}
+        '403':
+          description: Encuentra 1 o ninguna secuencia de bases nitrogenadas contiguas de forma horizontal, vertical o diagonal
+          content:
+            application/json:
+              examples:
+                mutante:
+                  value: >-
+                    {"dna":["ATGCGA","CAGTGC","TTATTT","AGACGG","GCGTCA","TCACTG"]}
+        '400':
+          description: Reconoce que la secuencia de ADN enviada no es valida, por estar vacía, contener bases nitrogenadas erroneas o tener JSON body mal formado
+          content:
+            application/json:
+              examples:
+                mutante:
+                  value: >-
+                    {"adn":["AAAX","CCCC","GGGG","TTTT"]}
