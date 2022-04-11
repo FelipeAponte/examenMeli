@@ -11,9 +11,9 @@ import (
 
 // connectMysql opens the database to perform operations
 func connectMysql() *sql.DB {
-	USER := "root"
-	PASSWD := "root"
-	DB := "bookstore"
+	USER := "magneto"
+	PASSWD := "examenmeli"
+	DB := "meli"
 
 	db, err := sql.Open("mysql", USER+":"+PASSWD+"@tcp(127.0.0.1:3306)/"+DB)
 
